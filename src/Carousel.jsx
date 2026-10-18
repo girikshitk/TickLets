@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback, Suspense, lazy } from 'react';
 
 const ModelViewer = lazy(() => import('./ModelViewer.jsx'));
 
@@ -18,6 +18,9 @@ export default function Carousel({ models }) {
   const slideTimer = useRef(null);
   const resumeTimer = useRef(null);
   const downPos = useRef({ x: 0, y: 0, had: false });
+  const boxRefs = useRef({});
+  const captionRefs = useRef({});
+  const prevOffsets = useRef(new Map());
   const count = models.length;
 
   const goTo = useCallback((idx) => {
@@ -66,6 +69,26 @@ export default function Carousel({ models }) {
     ordered.push({ idx, offset: i });
   }
 
+  // An item whose slot jumps by more than one position (e.g. right side to
+  // left side) must teleport instead of animating across the stage.
+  useLayoutEffect(() => {
+    ordered.forEach(({ idx, offset }) => {
+      const id = models[idx].id;
+      const prev = prevOffsets.current.get(id);
+      prevOffsets.current.set(id, offset);
+      if (prev === undefined || Math.abs(offset - prev) <= 1) return;
+      for (const refs of [boxRefs.current, captionRefs.current]) {
+        const el = refs[id];
+        if (!el) continue;
+        el.style.transition = 'none';
+        void el.offsetWidth;
+        requestAnimationFrame(() => {
+          el.style.transition = `transform ${SLIDE_DURATION}ms ${EASING}, opacity 500ms ease`;
+        });
+      }
+    });
+  });
+
   return (
     <div className="carousel">
       <div className="carousel-track">
@@ -75,6 +98,7 @@ export default function Carousel({ models }) {
           return (
             <div
               key={model.id}
+              ref={(el) => { if (el) boxRefs.current[model.id] = el; }}
               className={`carousel-box ${isCenter ? 'is-center' : 'is-side'}`}
               data-offset={offset}
               style={{
@@ -122,6 +146,7 @@ export default function Carousel({ models }) {
           return (
             <div
               key={`cap-${model.id}`}
+              ref={(el) => { if (el) captionRefs.current[model.id] = el; }}
               className={`caption ${offset === 0 ? 'caption-center' : 'caption-side'}`}
               style={{
                 transform: `translate(-50%, -50%) translateX(calc(${offset} * (var(--box-w) + var(--gap))))`,
