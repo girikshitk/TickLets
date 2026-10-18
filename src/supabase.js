@@ -3,9 +3,11 @@ import { createClient } from '@supabase/supabase-js';
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabase = createClient(url, anonKey, {
-  auth: { persistSession: false },
-});
+const hasSupabase = Boolean(url && anonKey);
+
+export const supabase = hasSupabase
+  ? createClient(url, anonKey, { auth: { persistSession: false } })
+  : null;
 
 const FALLBACK_MODELS = [
   { id: 'fallback-1', display_name: 'Lumi', file_path: 'cat-1.glb', strip_order: 1 },
@@ -14,6 +16,10 @@ const FALLBACK_MODELS = [
 ];
 
 export async function fetchModels() {
+  if (!hasSupabase) {
+    console.warn('Supabase keys not configured, using bundled model list');
+    return FALLBACK_MODELS;
+  }
   try {
     const { data, error } = await supabase
       .from('models')
@@ -31,8 +37,10 @@ export async function fetchModels() {
 
 export function resolveModelUrl(filePath) {
   if (/^https?:\/\//i.test(filePath)) return filePath;
-  const url = import.meta.env.VITE_SUPABASE_URL;
-  return `${url}/storage/v1/object/public/models/${filePath}`;
+  if (hasSupabase) {
+    return `${url}/storage/v1/object/public/models/${filePath}`;
+  }
+  return localFallbackUrl(filePath);
 }
 
 export function localFallbackUrl(filePath) {

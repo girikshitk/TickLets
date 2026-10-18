@@ -6,4 +6,5 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['three'],
   },
+  // The deploy workflow passes --base=/<repo-name>/ so assets resolve on GitHub Pages.
 });
