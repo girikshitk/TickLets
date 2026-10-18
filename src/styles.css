@@ -1,0 +1,333 @@
+:root {
+  --bg: #f7f7f5;
+  --bg-soft: #efeee9;
+  --ink: #1a1a1a;
+  --ink-soft: #555;
+  --ink-dim: #8a8a8a;
+  --line: rgba(0, 0, 0, 0.08);
+  --accent: #c8853a;
+  --box-w: 56vw;
+  --gap: 0px;
+  --side-peek: 14vw;
+  --header-h: 60px;
+  --caption-h: 64px;
+  --indicator-h: 44px;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.app {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  height: var(--header-h);
+  flex: 0 0 var(--header-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(247, 247, 245, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-mark {
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+}
+
+.brand-name {
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.brand-tag {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ink-dim);
+  letter-spacing: 0.08em;
+  padding-left: 8px;
+  border-left: 1px solid var(--line);
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  transition: color 200ms ease;
+}
+
+.nav-links a:hover {
+  color: var(--ink);
+}
+
+/* ---------- Stage ---------- */
+.stage {
+  flex: 1 1 auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* ---------- Carousel ---------- */
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.carousel-track {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1600px;
+  min-height: 0;
+}
+
+.carousel-box {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--box-w);
+  height: 100%;
+  max-height: calc(100vh - var(--header-h) - var(--caption-h) - var(--indicator-h) - 24px);
+  transform-origin: center center;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 20px 50px -20px rgba(0, 0, 0, 0.22),
+    0 6px 18px -10px rgba(0, 0, 0, 0.14);
+  will-change: transform;
+}
+
+.carousel-box.is-side {
+  cursor: pointer;
+}
+
+.carousel-box.is-side::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.0) 55%, rgba(240,238,232,0.18) 100%);
+  pointer-events: none;
+}
+
+.carousel-box.is-side:hover {
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 26px 60px -18px rgba(0, 0, 0, 0.28),
+    0 8px 22px -10px rgba(0, 0, 0, 0.18);
+}
+
+.carousel-box canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
+}
+
+/* ---------- Captions ---------- */
+.carousel-captions {
+  position: relative;
+  width: 100%;
+  height: var(--caption-h);
+  flex: 0 0 var(--caption-h);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.caption {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  width: var(--box-w);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  will-change: transform, opacity;
+}
+
+.caption-name {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+}
+
+.caption-side .caption-name {
+  color: var(--ink-dim);
+}
+
+.caption-sub {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+/* ---------- Indicator ---------- */
+.carousel-indicator {
+  position: relative;
+  width: 100%;
+  height: var(--indicator-h);
+  flex: 0 0 var(--indicator-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.indicator-dot {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 12px 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.indicator-bar {
+  display: block;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.18);
+  transition: width 320ms cubic-bezier(0.22, 0.61, 0.36, 1), background 320ms ease;
+}
+
+.indicator-dot.is-active .indicator-bar {
+  width: 44px;
+  height: 2px;
+  background: var(--ink);
+}
+
+.indicator-dot:hover .indicator-bar {
+  background: rgba(0, 0, 0, 0.42);
+}
+
+/* ---------- Viewer states ---------- */
+.viewer-loading,
+.viewer-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: #ffffff;
+  color: var(--ink-dim);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.loader-ring {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(0, 0, 0, 0.10);
+  border-top-color: rgba(0, 0, 0, 0.55);
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.boot-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--ink-dim);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  :root {
+    --box-w: 78vw;
+    --header-h: 54px;
+    --caption-h: 56px;
+  }
+  .nav-links { gap: 18px; }
+  .nav-links a { font-size: 12px; }
+  .brand-tag { display: none; }
+  .caption-name { font-size: 15px; }
+}
+
+@media (max-width: 560px) {
+  :root {
+    --box-w: 86vw;
+    --header-h: 50px;
+  }
+  .app-header { padding: 0 16px; }
+  .nav-links { gap: 14px; }
+  .brand-name { font-size: 12px; }
+}
+
+@media (max-height: 620px) {
+  :root {
+    --caption-h: 48px;
+    --indicator-h: 36px;
+  }
+}
